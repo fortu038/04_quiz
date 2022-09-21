@@ -16,6 +16,23 @@ function show_question() {
     // 1) Timer starts
     // 2) Display a question 
 
+/*
+// Answer button click outline
+var buttons = document.querySelectorAll("button");
+var coorectButton = document.getElementById("button_name");
+
+correctButton.setAttribute("data-correct", "yes");
+
+for(var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click", function(event) {
+        var isCorrect = event.target.getAttribute("data-correct");
+        if(isCorrect === "yes") {
+            alert("Correct answer")
+        }
+    });
+}
+*/
+
 var questions = [
     {
         question: "How many fingers do humans have?",
