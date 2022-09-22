@@ -8,12 +8,42 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 
-<body>
-    <div id="button">
-        <button id="start">Start the Quiz</button>
+<header>
+    <div id="high_scores_button">
+        <h2>View High Scores</h2>
     </div>
 
-    <script src="./assets/js/script.js" ></script>
+    <div id="timer">
+        <h2>Time: <span>60</span></h2>
+    </div>
+</header>
+
+<body>
+    <section id="clicker">
+        <button id="start">Start the Quiz</button>
+    </section>
+
+    <section id="question_and_answers">
+        <h2 id="question">
+            Example Question Text
+        </h2>
+        <ol type="A" id="answers">
+            <li>Answer 1</li>
+            <li>Answer 2</li>
+            <li>Answer 3</li>
+            <li>Answer 4</li>
+        </ol>
+    </section>
+
+    <section id="high_scores_list">
+        <ol type="1">
+            <li>Testing 1</li>
+            <li>Testing 2</li>
+            <li>Testing 3</li>
+        </ol>
+    </section>
 </body>
+
+<script src="./assets/js/script.js" ></script>
 
 </html>

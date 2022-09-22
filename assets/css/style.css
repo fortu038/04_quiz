@@ -1,10 +1,38 @@
-#button {
+* {
+    font-family: "Times New Roman", serif;
+}
+
+header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     /* outline: 1px solid red; */
+}
+
+body #clicker {
+    display: flex;
+    justify-content: center;
+    margin-left: 0px;
+}
+
+ol {
+    margin-right: 23px; /* <-- Need to do this otherwise both lists look misaligned to everything else :( */
 }
 
 button {
     background-color: yellow;
+}
+
+#question_and_answers {
+    display: none; /* <-- Hidden by default */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* outline: 1px solid red; */
+}
+
+#high_scores_list {
+    display: none; /* <-- Hidden by default */
+    flex-direction: column;
+    align-items: center;
 }
