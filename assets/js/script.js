@@ -2,6 +2,21 @@ var start_button = document.querySelector("#start");
 
 var current_score = 0;
 var seconds_remaining = 120;
+var high_scores = [];
+
+function init() {
+    var scores = JSON.parse(localStorage.getItem("high_scores"));
+
+    if(scores === null) {
+        high_scores = [];
+    } else {
+        high_scores = scores;
+    }
+}
+
+function end_game() {
+
+}
 
 function show_question() {
     // Figure which item to get from the array whenever this function is called (use a global?)
@@ -35,7 +50,7 @@ for(var i = 0; i < buttons.length; i++) {
 }
 */
 
-var questions = [
+var questions_array = [
     {
         question: "How many fingers do humans have?",
         answers: [
@@ -44,7 +59,6 @@ var questions = [
             [3,false],
             [10,true]
         ],
-        // correct_answer: 10
     },
 
     {
@@ -55,12 +69,11 @@ var questions = [
             ["Maryland",false],
             ["Alaska",true]
         ],
-        // correct_answer: "Alaska"
     }
 ]
 
-for(var i = 0; i < questions.length; i++) {
-    var curr_question_obj = questions[i];
+for(var i = 0; i < questions_array.length; i++) {
+    var curr_question_obj = questions_array[i];
     var section = document.createElement("section");
     // create an h2 tag, give it the text of the question
     // create a ul/ol tag
@@ -71,7 +84,7 @@ for(var i = 0; i < questions.length; i++) {
 
 // Event listener for clicking the start button
 start_button.addEventListener("click", function() {
-    console.log("clicked it");
+    console.log("clicked start");
 });
 
 // Event listener for choosing an answer
