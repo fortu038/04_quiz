@@ -1,3 +1,5 @@
+var start_button = document.querySelector("#start");
+
 var current_score = 0;
 var seconds_remaining = 120;
 
@@ -37,23 +39,23 @@ var questions = [
     {
         question: "How many fingers do humans have?",
         answers: [
-            1,
-            2,
-            3,
-            10
+            [1,false],
+            [2,false],
+            [3,false],
+            [10,true]
         ],
-        correct_answer: 10
+        // correct_answer: 10
     },
 
     {
         question: "What is the northern-most state in the US?",
         answers: [
-            "Hawaii",
-            "Nevada",
-            "Maryland",
-            "Alaska"
+            ["Hawaii",false],
+            ["Nevada",false],
+            ["Maryland",false],
+            ["Alaska",true]
         ],
-        correct_answer: "Alaska"
+        // correct_answer: "Alaska"
     }
 ]
 
@@ -67,6 +69,9 @@ for(var i = 0; i < questions.length; i++) {
     // add all this stuff to the DOM
 }
 
-// Event Listeners
-    // One for clicking the start button
-    // One for choosing an answer
+// Event listener for clicking the start button
+start_button.addEventListener("click", function() {
+    console.log("clicked it");
+});
+
+// Event listener for choosing an answer
