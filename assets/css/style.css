@@ -15,8 +15,15 @@ body #clicker {
     margin-left: 0px;
 }
 
+li {
+    /* outline: 1px solid red; */
+    margin: 20px;
+    /* background-color: yellow; */
+}
+
 ol {
     margin-right: 23px; /* <-- Need to do this otherwise both lists look misaligned to everything else :( */
+    outline: 1px solid red;
 }
 
 button {
