@@ -179,6 +179,9 @@ var questions_array = [
     }
 ]
 
+// Helepr function that changes the score_form's display to flex and
+// question_and_answers's display to none. Also updates score_count
+// textContent to current_score
 function show_submit_form() {
     question_and_answers.style.display = "none";
     score_form.style.display = "flex";
