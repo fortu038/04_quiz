@@ -1,4 +1,5 @@
 var high_scores_button = document.querySelector("#high_scores_button");
+var score_button_text = document.querySelector("#score_button_text");
 
 var timer = document.querySelector("#timer");
 
@@ -9,6 +10,7 @@ var question = document.querySelector("#question");
 var answers = document.querySelector("#answers");
 
 var high_scores_list = document.querySelector("#high_scores_list");
+var high_scores_body = document.querySelector("#high_scores_body");
 
 
 var current_score = 0;
@@ -17,13 +19,14 @@ var seconds_remaining = 60;
 var high_scores = []; // <- Have this be an array of arrays that stores nicknames and scores as pairs
 var top_score = 0;
 var low_score = 0;
+var points = 0;
 
 
 function init() {
     var scores = JSON.parse(localStorage.getItem("high_scores"));
 
     if(scores === null) {
-        high_scores = [];
+        high_scores = [14, 9, 4];
     } else {
         high_scores = scores;
     }
@@ -32,17 +35,6 @@ function init() {
 function end_game() {
 
 }
-
-// function show_question() {
-//     // Figure which item to get from the array whenever this function is called (use a global?)
-//     var curr_question_obj = questions[i];
-//     var section = document.createElement("section");
-//     // create an h2 tag, give it the text of the question
-//     // create a ul/ol tag
-//     // for each answers, create an li tag
-
-//     // add all this stuff to the DOM
-// }
 
 function build_question(q_num) {
     var curr_question_obj = questions_array[q_num];
@@ -57,10 +49,10 @@ function build_question(q_num) {
         answers.appendChild(li_tag);
     }
 
-    var answers_array = document.querySelectorAll("#answers");
+    // var answers_array = document.querySelectorAll("#answers");
 
-    console.log(answers);
-    console.log(answers_array);
+    // console.log(answers);
+    // console.log(answers_array);
 
     var ans_buttons = document.querySelectorAll("#answers")
 
@@ -68,11 +60,24 @@ function build_question(q_num) {
         ans_buttons[i].addEventListener("click", function(event) {
             var isCorrect = event.target.getAttribute("id");
             if(isCorrect == "true") {
+                points = points + 10;
                 alert("Correct!");
             } else {
-                alert("Wrong");
+                alert("Wrong :(");
             }
         });
+    }
+}
+
+function build_high_scores() {
+    for(var i = 0; i < high_scores.length; i++) {
+        var li_tag = document.createElement("li");
+        // console.log(high_scores[i]);
+        // console.log(document.createTextNode(high_scores[i]));
+        
+        li_tag.appendChild(document.createTextNode(high_scores[i]));
+
+        high_scores_body.appendChild(li_tag);
     }
 }
 
@@ -119,23 +124,55 @@ var questions_array = [
     }
 ]
 
-for(var i = 0; i < questions_array.length; i++) {
-    var curr_question_obj = questions_array[i];
-    var section = document.createElement("section");
-    // create an h2 tag, give it the text of the question
-    // create a ul/ol tag
-    // for each answers, create an li tag
+// for(var i = 0; i < questions_array.length; i++) {
+//     var curr_question_obj = questions_array[i];
+//     var section = document.createElement("section");
+//     // create an h2 tag, give it the text of the question
+//     // create a ul/ol tag
+//     // for each answers, create an li tag
 
-    // add all this stuff to the DOM
-}
+//     // add all this stuff to the DOM
+// }
 
 // Event listener for clicking the start button
 start.addEventListener("click", function() {
     // console.log("clicked start");
     start.style.display = "none";
+    high_scores_list.style.display = "none";
     question_and_answers.style.display = "flex";
     // console.log(questions_array[0].q);
     build_question(0);
 });
 
-// Event listener for choosing an answer
+var mode = "off"; // Set default to off, as in viewing high scores is off
+
+// Event listener for clicking the view high scores button
+high_scores_button.addEventListener("click", function () {
+    // console.log(high_scores_button.id);
+    if(mode === "off") {
+        mode = "on";
+        
+        question_and_answers.style.display = "none";
+        start.style.display = "none";
+        high_scores_list.style.display = "flex";
+        
+        var holder = document.getElementById("#high_scores_body");
+        console.log(holder);
+        if(holder != null) {
+            holder.innerHTML = "";
+        }
+        build_high_scores();
+        
+        score_button_text.textContent = "Hide High Scores";
+    } else{
+        mode = "off";
+        
+        question_and_answers.style.display = "none";
+        start.style.display = "flex";
+        high_scores_list.style.display = "none";
+        
+        score_button_text.textContent = "View High Scores";
+    }
+});
+
+init();

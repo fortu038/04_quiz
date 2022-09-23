@@ -22,8 +22,7 @@ li {
 }
 
 ol {
-    margin-right: 23px; /* <-- Need to do this otherwise both lists look misaligned to everything else :( */
-    outline: 1px solid red;
+    margin-right: 25px; /* <-- Need to do this otherwise both lists look misaligned to everything else :( */
 }
 
 button {
