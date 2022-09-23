@@ -32,7 +32,7 @@ N/A
 
 Please refer to the license in the repo
 
-## Links
+## Links and Images
 
 Github Pages URL: https://fortu038.github.io/04_quiz/
 ![A screenshot of the quiz site with a question currently pulled up](./assets/images/quiz_in_progress.jpg)
