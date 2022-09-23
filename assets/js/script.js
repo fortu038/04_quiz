@@ -18,22 +18,29 @@ var submit_button = document.querySelector("#submit_button");
 var score_count = document.querySelector("#score_count");
 
 
-var high_scores = []; // <- Have this be an array of arrays that stores nicknames and scores as pairs
-var top_score = 0;
-var low_score = 0;
+// The high_scores array is intended to be an array of arrays. Elements in the [x][0] indexes
+// will be the nicknames while elements in the [x][1] indexes will be the scores associated
+// with those nicknames
+var high_scores = [];
+
+// For a score sorting system, if I can implement one later
+// var top_score = 0;
+// var low_score = 0;
+
 var current_score = 0;
+var end_game = false;
 
 
 // Helper function that removes all the elements of an HTML list
 function remove_list_nodes(list_element) {
     if(list_element) {
-        // console.log("in if-statement");
         while(list_element.firstChild) {
             list_element.removeChild(list_element.firstChild);
         }
     }
 }
 
+// Helper function that tracks the time left to take the quiz
 var seconds_left = 60;
 function set_time() {
     var timer_interval = setInterval(function () {
@@ -41,7 +48,8 @@ function set_time() {
         timer.textContent = seconds_left;
         console.log(seconds_left);
         
-        if(seconds_left <= 45) {
+        if(seconds_left <= 0 || end_game == true) {
+            console.log("in zero");
             clearInterval(timer_interval);
             seconds_left = 60;
             timer.textContent = seconds_left;
@@ -50,6 +58,8 @@ function set_time() {
     }, 1000);
 }
 
+// Initializer. Pulls high_score from local storage if it exists, substatuting and empty array
+// if it does not
 function init() {
     var scores = JSON.parse(localStorage.getItem("high_scores"));
 
@@ -60,16 +70,24 @@ function init() {
     }
 }
 
+// Bug Note: Toggling on the high score board while a quiz is running will cause the clock
+// to freak out, gumming up the whole works. This function was made to help fix this
+// this, but does work as intended at the moment
 function reset() {
     seconds_left = 60;
     timer.textContent = seconds_left;
     current_score = 0;
 }
 
+// Helper function that saves the the high_scores array to local storage as high_scores
 function save_high_scores() {
     localStorage.setItem("high_scores", JSON.stringify(high_scores));
 }
 
+// Helper function that builds the quiz questions. Reuses the same h2 and ol elements for
+// all questions
+// Bug: Questions always double their number of alerts compared to the last one, example:
+// question 1 has 1 alert, question 2 has 2, question 3 has 4, etc.
 function build_question(q_num) {
     remove_list_nodes(answers);
     var curr_question_obj = questions_array[q_num];
@@ -91,28 +109,32 @@ function build_question(q_num) {
         ans_buttons[i].addEventListener("click", function(event) {
             var isCorrect = event.target.getAttribute("id");
             if(isCorrect == "true") {
-                console.log("looking iffy");
                 current_score = current_score + 10;
                 alert("Correct!");
+                if(q_num < questions_array.length - 1) {
+                    build_question(q_num+1);
+                } else {
+                    end_game = true;
+                }
                 return;
-                console.log("returned?");
             } else {
-                console.log("hit else");
                 seconds_left = seconds_left - 5;
                 alert("Wrong :(");
+                if(q_num < questions_array.length - 1) {
+                    build_question(q_num+1);
+                } else {
+                    end_game = true;
+                }
                 return;
-                console.log("returned?");
             }
         });
     }
 }
 
-
+// Helper function that builds the high scores table. Reuses the same ol element for all builds.
 function build_high_scores() {
     for(var i = 0; i < high_scores.length; i++) {
         var li_tag = document.createElement("li");
-        // console.log(high_scores[i]);
-        // console.log(document.createTextNode(high_scores[i]));
         
         li_tag.appendChild(document.createTextNode(high_scores[i][0]));
         li_tag.innerHTML += " : " + high_scores[i][1];
@@ -124,7 +146,7 @@ function build_high_scores() {
 // An array of objects that acts as a question list for the quiz
 // Each object has the exact same structure, with the q key's values being the question being 
 // asked and the a key's value being an array of arrays that stores both answers and the
-// respectitve answer's correctness
+// respectitve answer's correctness.
 var questions_array = [
     {
         q: "How many fingers do humans have?",
@@ -139,23 +161,23 @@ var questions_array = [
     {
         q: "What is the northern-most state in the US?",
         as: [
-            ["Hawaii",false],
-            ["Minnesota",false],
-            ["Guam",false],
-            ["Alaska",true]
+            ["Hawaii", false],
+            ["Minnesota", false],
+            ["Guam", false],
+            ["Alaska", true]
         ],
+    },
+
+    {
+        q: "What is the capital of Brazil?",
+        as: [
+            ["Rio de Janeiro", false],
+            ["Sao Paulo", false],
+            ["Brasilia", true],
+            ["Pao de Acucar", false]
+        ]
     }
 ]
-
-// for(var i = 0; i < questions_array.length; i++) {
-//     var curr_question_obj = questions_array[i];
-//     var section = document.createElement("section");
-//     // create an h2 tag, give it the text of the question
-//     // create a ul/ol tag
-//     // for each answers, create an li tag
-
-//     // add all this stuff to the DOM
-// }
 
 function show_submit_form() {
     question_and_answers.style.display = "none";
@@ -163,34 +185,28 @@ function show_submit_form() {
     score_count.textContent = current_score;
 }
 
-// Event listener for clicking the submit button
+// Event listener for clicking the submit button.
 submit_button.addEventListener("click", function(event) {
     event.preventDefault();
-    // console.log("clicked submit");
-    // console.log(event.target);
     high_scores.push([comment.value.trim(), current_score]);
     save_high_scores();
     score_form.style.display = "none";
     start.style.display = "flex";
 });
 
-// Event listener for clicking the start button
+// Event listener for clicking the start button.
 start.addEventListener("click", function() {
-    // console.log("clicked start");
     start.style.display = "none";
     high_scores_list.style.display = "none";
     question_and_answers.style.display = "flex";
-    // console.log(questions_array[0].q);
     set_time();
-    for(var i = 0; i < questions_array.length; i++) {
-        build_question(i);
-    }
+    build_question(0);
+    // end_game = true;
 });
 
 var mode = "off"; // Set default to off, meaning that view of high scores is not acitve
 // Event listener for clicking the view high scores button
 high_scores_button.addEventListener("click", function () {
-    // console.log(high_scores_button.id);
     if(mode === "off") {
         mode = "on";
         
