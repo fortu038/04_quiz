@@ -12,31 +12,66 @@ var answers = document.querySelector("#answers");
 var high_scores_list = document.querySelector("#high_scores_list");
 var high_scores_body = document.querySelector("#high_scores_body");
 
+var score_form = document.querySelector("#score_form");
+var comment = document.querySelector("#comment");
+var submit_button = document.querySelector("#submit_button");
+var score_count = document.querySelector("#score_count");
 
-var current_score = 0;
-var seconds_remaining = 60;
 
 var high_scores = []; // <- Have this be an array of arrays that stores nicknames and scores as pairs
 var top_score = 0;
 var low_score = 0;
-var points = 0;
+var current_score = 0;
 
+
+// Helper function that removes all the elements of an HTML list
+function remove_list_nodes(list_element) {
+    if(list_element) {
+        // console.log("in if-statement");
+        while(list_element.firstChild) {
+            list_element.removeChild(list_element.firstChild);
+        }
+    }
+}
+
+var seconds_left = 60;
+function set_time() {
+    var timer_interval = setInterval(function () {
+        seconds_left--;
+        timer.textContent = seconds_left;
+        console.log(seconds_left);
+        
+        if(seconds_left <= 45) {
+            clearInterval(timer_interval);
+            seconds_left = 60;
+            timer.textContent = seconds_left;
+            show_submit_form();
+        }
+    }, 1000);
+}
 
 function init() {
     var scores = JSON.parse(localStorage.getItem("high_scores"));
 
     if(scores === null) {
-        high_scores = [14, 9, 4];
+        high_scores = [];
     } else {
         high_scores = scores;
     }
 }
 
-function end_game() {
+function reset() {
+    seconds_left = 60;
+    timer.textContent = seconds_left;
+    current_score = 0;
+}
 
+function save_high_scores() {
+    localStorage.setItem("high_scores", JSON.stringify(high_scores));
 }
 
 function build_question(q_num) {
+    remove_list_nodes(answers);
     var curr_question_obj = questions_array[q_num];
     question.innerHTML = curr_question_obj.q;
     var len_as = curr_question_obj.as.length;
@@ -49,25 +84,29 @@ function build_question(q_num) {
         answers.appendChild(li_tag);
     }
 
-    // var answers_array = document.querySelectorAll("#answers");
-
-    // console.log(answers);
-    // console.log(answers_array);
-
     var ans_buttons = document.querySelectorAll("#answers")
+    // console.log(ans_buttons);
 
     for(var i = 0; i < ans_buttons.length; i++) {
         ans_buttons[i].addEventListener("click", function(event) {
             var isCorrect = event.target.getAttribute("id");
             if(isCorrect == "true") {
-                points = points + 10;
+                console.log("looking iffy");
+                current_score = current_score + 10;
                 alert("Correct!");
+                return;
+                console.log("returned?");
             } else {
+                console.log("hit else");
+                seconds_left = seconds_left - 5;
                 alert("Wrong :(");
+                return;
+                console.log("returned?");
             }
         });
     }
 }
+
 
 function build_high_scores() {
     for(var i = 0; i < high_scores.length; i++) {
@@ -75,33 +114,17 @@ function build_high_scores() {
         // console.log(high_scores[i]);
         // console.log(document.createTextNode(high_scores[i]));
         
-        li_tag.appendChild(document.createTextNode(high_scores[i]));
+        li_tag.appendChild(document.createTextNode(high_scores[i][0]));
+        li_tag.innerHTML += " : " + high_scores[i][1];
 
         high_scores_body.appendChild(li_tag);
     }
 }
 
-// When the user clicks start, the follow needs to happen
-    // 1) Timer starts
-    // 2) Display a question 
-
-/*
-// Answer button click outline
-var buttons = document.querySelectorAll("button");
-var coorectButton = document.getElementById("button_name");
-
-correctButton.setAttribute("data-correct", "yes");
-
-for(var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener("click", function(event) {
-        var isCorrect = event.target.getAttribute("data-correct");
-        if(isCorrect === "yes") {
-            alert("Correct answer")
-        }
-    });
-}
-*/
-
+// An array of objects that acts as a question list for the quiz
+// Each object has the exact same structure, with the q key's values being the question being 
+// asked and the a key's value being an array of arrays that stores both answers and the
+// respectitve answer's correctness
 var questions_array = [
     {
         q: "How many fingers do humans have?",
@@ -134,6 +157,23 @@ var questions_array = [
 //     // add all this stuff to the DOM
 // }
 
+function show_submit_form() {
+    question_and_answers.style.display = "none";
+    score_form.style.display = "flex";
+    score_count.textContent = current_score;
+}
+
+// Event listener for clicking the submit button
+submit_button.addEventListener("click", function(event) {
+    event.preventDefault();
+    // console.log("clicked submit");
+    // console.log(event.target);
+    high_scores.push([comment.value.trim(), current_score]);
+    save_high_scores();
+    score_form.style.display = "none";
+    start.style.display = "flex";
+});
+
 // Event listener for clicking the start button
 start.addEventListener("click", function() {
     // console.log("clicked start");
@@ -141,11 +181,13 @@ start.addEventListener("click", function() {
     high_scores_list.style.display = "none";
     question_and_answers.style.display = "flex";
     // console.log(questions_array[0].q);
-    build_question(0);
+    set_time();
+    for(var i = 0; i < questions_array.length; i++) {
+        build_question(i);
+    }
 });
 
-var mode = "off"; // Set default to off, as in viewing high scores is off
-
+var mode = "off"; // Set default to off, meaning that view of high scores is not acitve
 // Event listener for clicking the view high scores button
 high_scores_button.addEventListener("click", function () {
     // console.log(high_scores_button.id);
@@ -155,12 +197,14 @@ high_scores_button.addEventListener("click", function () {
         question_and_answers.style.display = "none";
         start.style.display = "none";
         high_scores_list.style.display = "flex";
+
+        // Bug Note: Toggling on the high score board while a quiz is running will cause the clock
+        // to freak out, gumming up the whole works. The reset() function was made to help fix this
+        // this, but does work as intended at the moment
+        reset();
+
+        remove_list_nodes(high_scores_body);
         
-        var holder = document.getElementById("#high_scores_body");
-        console.log(holder);
-        if(holder != null) {
-            holder.innerHTML = "";
-        }
         build_high_scores();
         
         score_button_text.textContent = "Hide High Scores";

@@ -25,10 +25,6 @@ ol {
     margin-right: 25px; /* <-- Need to do this otherwise both lists look misaligned to everything else :( */
 }
 
-button {
-    background-color: yellow;
-}
-
 #question_and_answers {
     display: none; /* <-- Hidden by default */
     flex-direction: column;
@@ -39,6 +35,12 @@ button {
 
 #high_scores_list {
     display: none; /* <-- Hidden by default */
+    flex-direction: column;
+    align-items: center;
+}
+
+#score_form {
+    display: none;
     flex-direction: column;
     align-items: center;
 }
